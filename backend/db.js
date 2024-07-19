@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("your url")
+mongoose.connect("url")
 
 // created schema
 const userSchema = new mongoose.Schema({
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
         trim :  true,
         maxLength: 30
     },
-    firstName :{
+    lastName :{
         type: String,
         required: true,
         trim :  true,
