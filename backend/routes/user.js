@@ -12,6 +12,11 @@ const signupBody = zod.object({
     lastName: zod.string()
 })
 
+const signinBody = zod.object({
+    username : zod.string().email(),
+    password : zod.string(),
+})
+
 router.post("/signup", async (req, res) => {
     const {success} = signupBody.safeParse(req.body)
     if(!success){
@@ -41,6 +46,36 @@ router.post("/signup", async (req, res) => {
     res.json({
         msg: "User create successfully",
         token: token
+    })
+})
+
+
+router.post("/signin", async (req, res) => {
+    const {success} = signinBody.safeParse(req.body);
+
+    if(!success){
+        return res.status(411).json({
+            msg: "Input Invalid"
+        })
+    }
+    const user = await User.findOne({
+        username: req.body.username,
+        password: req.body.password
+    })
+
+    if(user){
+        const token = jwt.sign({
+            userId: user._id
+        }, JWT_SECRET);
+        
+        res.json({
+            token: token
+        })
+        return
+    }
+
+    res.json({
+        msg: "Error while logging in"
     })
 })
 
