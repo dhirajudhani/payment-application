@@ -1,6 +1,6 @@
 const express = require("express");
 const zod = require("zod");
-const { User } = require("../db");
+const { User, Account } = require("../db");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
@@ -44,6 +44,12 @@ router.post("/signup", async (req, res) => {
   });
 
   const userId = user._id;
+
+  // -------- Create new account with random balance -------
+  await Account.create({
+    userId : userId,
+    balance: 1+ Math.random() * 1000
+  })
 
   const token = jwt.sign(
     {
@@ -97,7 +103,7 @@ router.put("/", authMiddleware, async (req, res) => {
     return res.status(411).json({ msg: "Invalid Inputs" });
   }
 
-  await User.updateOne({ _id: req.userId }, req.body);
+  await User.updateOne({ _id: req.userId }, req.body); // good syntax to digest
 
   res.json({
     msg: "Updated successfully",
@@ -105,7 +111,7 @@ router.put("/", authMiddleware, async (req, res) => {
 });
 
 router.get("/bulk", async (req, res) => {
-  const filter = req.query.filter;
+  const filter = req.query.filter || "k";
   const users = await User.find({
     $or: [
       {
