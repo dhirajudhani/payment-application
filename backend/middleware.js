@@ -11,7 +11,7 @@ function authMiddleware(req, res, next){
     const decodedValue = jwt.verify(jwtToken, JWT_SECRET);
 
     if(decodedValue.userId){
-        req.userId = decodedValue.userId
+        req.userId = decodedValue.userId // good move
         next()
     }else{
         res.status(403).json({
